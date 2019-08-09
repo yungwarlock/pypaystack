@@ -63,7 +63,7 @@ class Transaction(BaseAPI):
         return self._handle_request('POST', url, payload)
 
 
-    def charge(self, email, auth_code, amount, reference=None):
+    def charge(self, email, auth_code, amount, reference=None,  metadata=None):
         """
         Charges a customer and returns the response
         
@@ -72,6 +72,7 @@ class Transaction(BaseAPI):
         email -- Customer's email address
         amount -- Amount to charge
         reference -- optional
+        metadata -- a list if json data objects/dicts
         """
         amount = utils.validate_amount(amount)
 
@@ -86,7 +87,8 @@ class Transaction(BaseAPI):
                     "authorization_code":auth_code, 
                     "email":email, 
                     "amount": amount,
-                    "reference": reference
+                    "reference": reference,
+                    "metadata": {"custom_fields":metadata}
                 }
 
         return self._handle_request('POST', url, payload)
