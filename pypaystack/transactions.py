@@ -4,14 +4,21 @@ from pypaystack import utils
  
 class Transaction(BaseAPI):
 
-    def getall(self, pagination=10):
+    def getall(self, start_date=None, end_date=None, status=None, pagination=10):
         """
         Gets all your transactions
         
         args:
         pagination -- Count of data to return per call 
+        from: start date
+        to: end date
         """
-        url = self._url("/transaction/?perPage="+str(pagination))
+        url = self._url("/transaction/?perPage={}".format(pagination))
+        url = url+"&status={}".format(status) if status else url
+        url = url+"&from={}".format(start_date) if start_date else url
+        url = url+"&to={}".format(end_date) if end_date else url
+
+        print(url)
         return self._handle_request('GET', url)
 
 
@@ -63,7 +70,7 @@ class Transaction(BaseAPI):
         return self._handle_request('POST', url, payload)
 
 
-    def charge(self, email, auth_code, amount, reference=None,  metadata=None):
+    def charge(self, email, auth_code, amount, reference=None, metadata=None):
         """
         Charges a customer and returns the response
         
