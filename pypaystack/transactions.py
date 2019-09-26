@@ -18,7 +18,6 @@ class Transaction(BaseAPI):
         url = url+"&from={}".format(start_date) if start_date else url
         url = url+"&to={}".format(end_date) if end_date else url
 
-        print(url)
         return self._handle_request('GET', url)
 
 
