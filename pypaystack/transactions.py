@@ -59,13 +59,13 @@ class Transaction(BaseAPI):
 
         url = self._url("/transaction/initialize")
         payload = {
-                    "email":email,
-                    "amount": amount,
-                    "reference": reference,
-                    "plan": plan,
-                    "channels": channel,
-                    "metadata": {"custom_fields":metadata}
-                }
+            "email":email,
+            "amount": amount,
+            "reference": reference,
+            "plan": plan,
+            "channels": channel,
+            "metadata": {"custom_fields":metadata}
+        }
         return self._handle_request('POST', url, payload)
 
 
@@ -90,12 +90,12 @@ class Transaction(BaseAPI):
         
         url = self._url("/transaction/charge_authorization")
         payload = {
-                    "authorization_code":auth_code, 
-                    "email":email, 
-                    "amount": amount,
-                    "reference": reference,
-                    "metadata": {"custom_fields":metadata}
-                }
+            "authorization_code":auth_code, 
+            "email":email, 
+            "amount": amount,
+            "reference": reference,
+            "metadata": {"custom_fields":metadata}
+        }
 
         return self._handle_request('POST', url, payload)
 
@@ -111,5 +111,50 @@ class Transaction(BaseAPI):
         reference = str(reference)
         url = self._url("/transaction/verify/{}".format(reference))
         return self._handle_request('GET', url)
+
+
+    def fetch_transfer_banks(self):
+        """
+        Fetch transfer banks
+        """
+        
+        url = self._url("/bank")
+        return self._handle_request('GET', url)
+
+
+    def create_transfer_customer(self, bank_code, account_number, account_name):
+        """
+        Create a transfer customer
+        """
+        url = self._url("/transferrecipient")
+        payload = {
+            "type":"nuban", 
+            "currency":"NGN", 
+            "bank_code": bank_code,
+            "account_number": account_number,
+            "name":account_name, 
+        }
+        return self._handle_request('POST', url, payload)
+
+
+
+    def transfer(self, recipient_code, amount, reason, reference=None):
+        """
+        Initiates transfer to a customer
+        """
+        amount = utils.validate_amount(amount)
+        url = self._url("/transfer")
+        payload = {
+            "amount": amount,
+            "reason": reason, 
+            "recipient": recipient_code, 
+            "source": "balance",
+            "currency":"NGN", 
+        }
+        if reference:
+            payload.update({"reference": reference}) 
+
+        return self._handle_request('POST', url, payload)
+
 
 
