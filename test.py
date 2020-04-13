@@ -65,4 +65,73 @@ class TestTransactionAPI(TestCase):
         retrieve_one_transaction()
 
 
+class TestCustomerAPI(TestCase):
+
+    def setUp(self):
+        super(TestCustomerAPI, self).setUp()
+        self.assertIsNotNone(test_auth_key)
+        self.customer = Customer(authorization_key=test_auth_key)
+
+    def test_customer_setup_and_update(self):
+        # using random generator for email id to ensure email is unique, thus ensuring success on retests
+        user_email = f"{uuid4()}@mail.com"
+        user_data = {"email": user_email,
+                     "first_name": "Test",
+                     "last_name": "Customer",
+                     "phone": "08012345678"}
+        updated_user_data = {
+            "email": user_email,
+            "first_name": "Updated",
+            "last_name": "Customer",
+            "phone": "080987654321"}
+
+        def create_customer():
+            (status_code, status, response_msg, created_customer_data) = self.customer.create(
+                email=user_data['email'], first_name=user_data['first_name'], last_name=user_data['last_name'], phone=user_data['phone'])
+            self.assertEqual(status_code, 200)
+            self.assertEqual(status, True)
+            self.assertEqual(response_msg, 'Customer created')
+            self.assertDictContainsSubset(user_data, created_customer_data)
+            return created_customer_data
+
+        def update_customer():
+            (status_code, status, response_msg, updated_customer_data) = self.customer.update(user_id=created_customer_data['id'],
+                                                                                              email=user_data['email'],
+                                                                                              first_name=updated_user_data[
+                'first_name'],
+                last_name=updated_user_data['last_name'],
+                phone=updated_user_data['phone'])
+            self.assertEqual(status_code, 200)
+            self.assertEqual(status, True)
+            self.assertEqual(response_msg, 'Customer updated')
+            self.assertDictContainsSubset(
+                updated_user_data, updated_customer_data)
+
+        created_customer_data = create_customer()
+        update_customer()
+
+    def test_customers_records(self):
+        def retrieve_all_customers():
+            (status_code, status, response_msg,
+             customers_list) = self.customer.getall()
+            self.assertEqual(status_code, 200)
+            self.assertEqual(status, True)
+            self.assertEqual(response_msg, 'Customers retrieved')
+            self.assertIsInstance(customers_list, list)
+            return customers_list
+
+        def retrieve_one_customer():
+            customer = customers_list[0]
+            (status_code, status, response_msg,
+             customer_data) = self.customer.getone(customer['id'])
+            self.assertEqual(status_code, 200)
+            self.assertEqual(status, True)
+            self.assertEqual(response_msg, 'Customer retrieved')
+            self.assertDictContainsSubset(customer, customer_data)
+            pass
+
+        customers_list = retrieve_all_customers()
+        retrieve_one_customer()
+
+
 # Todo: Finish this tests and actually test....:-(
