@@ -1,12 +1,11 @@
 import os
 from uuid import uuid4
-from unittest import TestCase, TestSuite, TextTestRunner
+from unittest import TestCase
 from pypaystack import Customer, Transaction, Plan
 
 BASE_URL = "https://api.paystack.co"
 
-test_auth_key = os.getenv('PAYSTACK_AUTHORIZATION_KEY')
-
+test_auth_key = os.getenv('PAYSTACK_AUTH_KEY')
 
 class TestTransactionAPI(TestCase):
     test_amount = 1000*100
@@ -15,7 +14,7 @@ class TestTransactionAPI(TestCase):
     def setUp(self):
         super(TestTransactionAPI, self).setUp()
         TestCase.assertIsNotNone(
-            test_auth_key, "PAYSTACK_AUTHORIZATION_KEY not Found")
+            test_auth_key, "PAYSTACK_AUTH_KEY not Found")
         self.transaction = Transaction(authorization_key=test_auth_key)
 
     def test_charge_and_verify(self):
@@ -51,15 +50,17 @@ class TestTransactionAPI(TestCase):
             return all_transactions
 
         def retrieve_one_transaction():
+            transaction = all_transactions[0]
             (status_code, status, response_msg, transaction_data) = self.transaction.getone(
-                transaction_id=all_transactions[0]['id'])
+                transaction_id=transaction['id'])
             self.assertEqual(status_code, 200)
             self.assertEqual(status, True)
             self.assertEqual(response_msg, 'Transaction retrieved')
-            # removing authorization field for assertion test
+            # removing authorization field as content is not concurrent in transaction_list and transaction_data
             del transaction_data['authorization']
-            self.assertDictContainsSubset(
-                transaction_data, all_transactions[0])
+            # assert if subset
+            self.assertLessEqual(transaction_data.items(),
+                                 transaction.items())
 
         all_transactions = retrieve_all_transactions()
         retrieve_one_transaction()
@@ -91,7 +92,9 @@ class TestCustomerAPI(TestCase):
             self.assertEqual(status_code, 200)
             self.assertEqual(status, True)
             self.assertEqual(response_msg, 'Customer created')
-            self.assertDictContainsSubset(user_data, created_customer_data)
+            # assert if subset
+            self.assertLessEqual(
+                user_data.items(), created_customer_data.items())
             return created_customer_data
 
         def update_customer():
@@ -104,8 +107,9 @@ class TestCustomerAPI(TestCase):
             self.assertEqual(status_code, 200)
             self.assertEqual(status, True)
             self.assertEqual(response_msg, 'Customer updated')
-            self.assertDictContainsSubset(
-                updated_user_data, updated_customer_data)
+            # assert if subset
+            self.assertLessEqual(
+                updated_user_data.items(), updated_customer_data.items())
 
         created_customer_data = create_customer()
         update_customer()
@@ -127,11 +131,13 @@ class TestCustomerAPI(TestCase):
             self.assertEqual(status_code, 200)
             self.assertEqual(status, True)
             self.assertEqual(response_msg, 'Customer retrieved')
-            self.assertDictContainsSubset(customer, customer_data)
-            pass
+            # assert if subset
+            self.assertLessEqual(customer.items(), customer_data.items())
 
         customers_list = retrieve_all_customers()
         retrieve_one_customer()
+
+
 
 
 # Todo: Finish this tests and actually test....:-(
