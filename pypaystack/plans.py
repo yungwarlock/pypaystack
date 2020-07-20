@@ -1,5 +1,5 @@
 from .baseapi import BaseAPI
-from pypaystack import utils
+from . import utils
 
  
 class Plan(BaseAPI):

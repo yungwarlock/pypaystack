@@ -1,5 +1,5 @@
 __title__ = 'pypaystack'
-__version__ = '1.21'
+__version__ = '1.22'
 __author__ = 'Edward Popoola'
 __license__ = 'MIT'
 __copyright__ = 'Copyright 2016. Edward Popoola'

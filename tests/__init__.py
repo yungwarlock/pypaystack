@@ -5,4 +5,4 @@ from uuid import uuid4
 
 from pypaystack import Customer, Plan, Transaction
 
-test_auth_key = os.getenv('PAYSTACK_AUTH_KEY')
+test_auth_key = os.getenv('PAYSTACK_AUTHORIZATION_KEY')

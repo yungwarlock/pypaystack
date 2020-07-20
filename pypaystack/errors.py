@@ -1,3 +1,5 @@
+
+
 class PyPaystackError(Exception):
     """
     Python Paystack Error

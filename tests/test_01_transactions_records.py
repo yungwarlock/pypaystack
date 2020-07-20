@@ -2,6 +2,7 @@ from . import test_auth_key, Transaction, TestCase
 
 
 class TestTransactionRecords(TestCase):
+    
     def setUp(self):
         super(TestTransactionRecords, self).setUp()
         self.assertNotEqual(test_auth_key, None)
@@ -27,11 +28,16 @@ class TestTransactionRecords(TestCase):
             self.assertEqual(status_code, 200)
             self.assertEqual(status, True)
             self.assertEqual(response_msg, 'Transaction retrieved')
+
             # removing authorization field as content is not concurrent in transaction_list and transaction_data
-            transaction_data.pop('authorization')
-            # assert if subset
-            self.assertLessEqual(transaction_data.items(),
-                                 one_transaction.items())
+            if 'authorization' in transaction_data.keys():
+                transaction_data.pop('authorization') 
+            if 'authorization' in one_transaction.keys():
+                one_transaction.pop('authorization') 
+
+            # assert if equal transaction keys are equal
+            self.assertEqual(transaction_data.keys(),
+                                 one_transaction.keys())
 
         all_transactions = retrieve_all_transactions()
         retrieve_one_transaction()

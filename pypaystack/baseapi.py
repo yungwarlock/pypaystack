@@ -2,8 +2,8 @@ import os
 import requests
 import json
 from pypaystack import version
- 
 from .errors import *
+
 
 class BaseAPI(object):
 
