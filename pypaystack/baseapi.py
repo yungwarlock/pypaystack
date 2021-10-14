@@ -4,6 +4,7 @@ import json
 from pypaystack import version
 from .errors import *
 
+from typing import Tuple
 
 class BaseAPI(object):
     """
@@ -32,7 +33,7 @@ class BaseAPI(object):
             "user-agent": "pyPaystack-{}".format(version.__version__)
         }
 
-    def _parse_json(self, response_obj):
+    def _parse_json(self, response_obj) -> Tuple[int, bool, str, dict]:
         """
         This function takes in every json response sent back by the
         server and trys to get out the important return variables
@@ -46,7 +47,7 @@ class BaseAPI(object):
         data = parsed_response.get('data', None)
         return response_obj.status_code, status, message, data
 
-    def _handle_request(self, method, url, data=None):
+    def _handle_request(self, method, url, data=None) -> Tuple[int, bool, str, dict]:
 
         """
         Generic function to handle all API url calls
