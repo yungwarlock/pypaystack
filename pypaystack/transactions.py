@@ -159,3 +159,15 @@ class Transaction(BaseAPI):
             payload.update({"reference": reference})
 
         return self._handle_request("POST", url, payload)
+
+    def cancel_subscription(self, subscription_code, email_token):
+        """
+        Cancels a Subscription to a Plan
+        """
+        url = self._url("/subscription/disable")
+        payload = {
+            "code": subscription_code,
+            "token": email_token,
+        }
+
+        return self._handle_request("POST", url, payload)
