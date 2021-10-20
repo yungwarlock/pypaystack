@@ -59,5 +59,5 @@ class Customer(BaseAPI):
         args:
         customer_code -- The customer's code
         """
-        url = self._url("/customer/{}/".format(customer_code))
+        url = self._url("/customer/{}".format(customer_code))
         return self._handle_request("GET", url)
